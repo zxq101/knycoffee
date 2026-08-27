@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>肯尼亚咖啡豆智能种植管理系统</title>
+<link rel="stylesheet" href="css/style.css?v=9">
+</head>
+<body>
+<!-- 登录态校验 -->
+<script>
+(function(){
+  var token = localStorage.getItem('coffee_user_token') || sessionStorage.getItem('coffee_user_token');
+  if (!token) { window.location.href = 'auth.html'; }
+})();
+</script>
+<!-- 手机端侧边栏遮罩 -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- 侧边栏 -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">☕</div>
+    <div class="brand-text">
+      <h1>KenyaCoffee</h1>
+      <span data-i18n="sidebarBrandSub">智能种植管理系统</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-page="dashboard">
+      <span class="nav-icon">📊</span>
+      <span data-i18n="navDashboard">数据仪表盘</span>
+    </a>
+    <a href="#" class="nav-item" data-page="input">
+      <span class="nav-icon">📝</span>
+      <span data-i18n="navInput">数据录入</span>
+    </a>
+    <a href="#" class="nav-item" data-page="decision">
+      <span class="nav-icon">🧠</span>
+      <span data-i18n="navDecision">智能决策</span>
+    </a>
+    <a href="#" class="nav-item" data-page="chat">
+      <span class="nav-icon">💬</span>
+      <span data-i18n="navChat">智能问答</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="lang-switcher" id="langSwitcher" role="group" aria-label="Switch language">
+      <button type="button" class="lang-btn" data-lang="zh">中文</button>
+      <span class="lang-divider"></span>
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <span class="lang-divider"></span>
+      <button type="button" class="lang-btn" data-lang="sw">SW</button>
+    </div>
+    <div class="sidebar-user" id="sidebarUser">
+      <div class="user-avatar">👨‍🌾</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarUserName">用户</span>
+        <span class="user-farm" id="sidebarUserEmail"></span>
+      </div>
+    </div>
+    <button class="btn-logout" id="btnLogout" title="退出登录" data-i18n-title="logoutTitle">
+      <span>🚪</span><span data-i18n="logout">退出登录</span>
+    </button>
+  </div>
+</aside>
+
+<!-- 移动端菜单按钮 -->
+<button class="menu-toggle" id="menuToggle">☰</button>
+
+<!-- 主内容区 -->
+<main class="main-content" id="mainContent">
+
+  <!-- ========== 仪表盘页面 ========== -->
+  <section class="page active" id="page-dashboard">
+    <div class="page-header">
+      <h2 data-i18n="dashTitle">📊 数据仪表盘</h2>
+      <p data-i18n="dashSubtitle">肯尼亚咖啡种植数据总览</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card stat-ph">
+        <div class="stat-top">
+          <div class="stat-head-left">
+            <span class="stat-icon">🧪</span>
+            <span class="stat-label" data-i18n="statPh">土壤pH</span>
+          </div>
+          <span class="stat-status" id="stat-ph-status" data-i18n="waitingData">等待录入</span>
+        </div>
+        <div class="stat-value" id="stat-ph">--</div>
+        <div class="stat-bar"><i id="bar-ph"></i></div>
+      </div>
+      <div class="stat-card stat-temp">
+        <div class="stat-top">
+          <div class="stat-head-left">
+            <span class="stat-icon">🌡️</span>
+            <span class="stat-label" data-i18n="statTemp">平均温度</span>
+          </div>
+          <span class="stat-status" id="stat-temp-status" data-i18n="waitingData">等待录入</span>
+        </div>
+        <div class="stat-value" id="stat-temp">--°C</div>
+        <div class="stat-bar"><i id="bar-temp"></i></div>
+      </div>
+      <div class="stat-card stat-rain">
+        <div class="stat-top">
+          <div class="stat-head-left">
+            <span class="stat-icon">🌧️</span>
+            <span class="stat-label" data-i18n="statRain">月降雨量</span>
+          </div>
+          <span class="stat-status" id="stat-rain-status" data-i18n="waitingData">等待录入</span>
+        </div>
+        <div class="stat-value" id="stat-rain">--mm</div>
+        <div class="stat-bar"><i id="bar-rain"></i></div>
+      </div>
+      <div class="stat-card stat-moisture">
+        <div class="stat-top">
+          <div class="stat-head-left">
+            <span class="stat-icon">💧</span>
+            <span class="stat-label" data-i18n="statMoisture">土壤湿度</span>
+          </div>
+          <span class="stat-status" id="stat-moisture-status" data-i18n="waitingData">等待录入</span>
+        </div>
+        <div class="stat-value" id="stat-moisture">--%</div>
+        <div class="stat-bar"><i id="bar-moisture"></i></div>
+      </div>
+    </div>
+    <!-- 指令推送区域 -->
+    <div class="card push-card">
+      <div class="card-header">
+        <h3 data-i18n="pushTitle">📋 最新种植指令推送</h3>
+        <span class="badge" id="push-count" data-i18n="pushPendingZero">0条待处理</span>
+      </div>
+      <div class="push-list" id="pushList">
+        <div class="push-empty">
+          <div class="empty-icon">📭</div>
+          <p data-i18n="pushEmpty">暂无指令，请先录入土壤和气象数据</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 数据录入页面 ========== -->
+  <section class="page" id="page-input">
+    <div class="page-header">
+      <h2 data-i18n="inputTitle">📝 数据录入</h2>
+      <p data-i18n="inputSubtitle">录入肯尼亚咖啡种植区的土壤与气象数据</p>
+    </div>
+    <form id="dataForm" class="data-form">
+      <!-- 土壤数据 -->
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="soilDataTitle">🌱 土壤数据</h3></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label><span class="fg-ico">🧪</span><span data-i18n="soilPhLabel">土壤pH值</span> <span class="range-hint">(3.5 - 8.5)</span></label>
+            <input type="range" id="soil-ph" min="3.5" max="8.5" step="0.1" value="5.5" oninput="this.nextElementSibling.value=this.value">
+            <output>5.5</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">🌿</span><span data-i18n="soilOrganicLabel">有机质含量 (%)</span></label>
+            <input type="range" id="soil-organic" min="0" max="15" step="0.1" value="3" oninput="this.nextElementSibling.value=this.value">
+            <output>3</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">🌾</span><span data-i18n="soilNLabel">氮含量 N (mg/kg)</span></label>
+            <input type="range" id="soil-n" min="0" max="300" step="1" value="80" oninput="this.nextElementSibling.value=this.value">
+            <output>80</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">🌸</span><span data-i18n="soilPLabel">磷含量 P (mg/kg)</span></label>
+            <input type="range" id="soil-p" min="0" max="200" step="1" value="30" oninput="this.nextElementSibling.value=this.value">
+            <output>30</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">🍌</span><span data-i18n="soilKLabel">钾含量 K (mg/kg)</span></label>
+            <input type="range" id="soil-k" min="0" max="500" step="1" value="150" oninput="this.nextElementSibling.value=this.value">
+            <output>150</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">💧</span><span data-i18n="soilMoistureLabel">土壤湿度 (%)</span></label>
+            <input type="range" id="soil-moisture" min="0" max="100" step="1" value="45" oninput="this.nextElementSibling.value=this.value">
+            <output>45</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">🪨</span><span data-i18n="soilTypeLabel">土壤类型</span></label>
+            <select id="soil-type">
+              <option value="volcanic" data-i18n="soilTypeVolcanic">火山土（Nitisols）</option>
+              <option value="red" data-i18n="soilTypeRed">红壤（Ferralsols）</option>
+              <option value="sandy" data-i18n="soilTypeSandy">沙壤土</option>
+              <option value="clay" data-i18n="soilTypeClay">黏土</option>
+              <option value="loam" data-i18n="soilTypeLoam">壤土</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 气象数据 -->
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="weatherDataTitle">🌤️ 气象数据</h3></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label><span class="fg-ico">🌡️</span><span data-i18n="weatherTempLabel">平均温度 (°C)</span></label>
+            <input type="range" id="weather-temp" min="5" max="40" step="0.5" value="20" oninput="this.nextElementSibling.value=this.value">
+            <output>20</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">🌧️</span><span data-i18n="weatherRainLabel">月降雨量 (mm)</span></label>
+            <input type="range" id="weather-rain" min="0" max="500" step="1" value="120" oninput="this.nextElementSibling.value=this.value">
+            <output>120</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">☀️</span><span data-i18n="weatherSunLabel">日照时长 (小时/天)</span></label>
+            <input type="range" id="weather-sun" min="0" max="14" step="0.5" value="7" oninput="this.nextElementSibling.value=this.value">
+            <output>7</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">💦</span><span data-i18n="weatherHumidityLabel">相对湿度 (%)</span></label>
+            <input type="range" id="weather-humidity" min="10" max="100" step="1" value="65" oninput="this.nextElementSibling.value=this.value">
+            <output>65</output>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">⛰️</span><span data-i18n="weatherAltitudeLabel">海拔高度 (m)</span></label>
+            <input type="number" id="weather-altitude" value="1600" min="0" max="3000" step="50">
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">📅</span><span data-i18n="weatherMonthLabel">当前月份</span></label>
+            <select id="weather-month">
+              <option value="1" data-i18n="month1">一月 January</option>
+              <option value="2" data-i18n="month2">二月 February</option>
+              <option value="3" data-i18n="month3">三月 March</option>
+              <option value="4" data-i18n="month4">四月 April</option>
+              <option value="5" data-i18n="month5">五月 May</option>
+              <option value="6" data-i18n="month6">六月 June</option>
+              <option value="7" data-i18n="month7">七月 July</option>
+              <option value="8" data-i18n="month8">八月 August</option>
+              <option value="9" data-i18n="month9">九月 September</option>
+              <option value="10" data-i18n="month10">十月 October</option>
+              <option value="11" data-i18n="month11">十一月 November</option>
+              <option value="12" data-i18n="month12">十二月 December</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><span class="fg-ico">🌳</span><span data-i18n="treeAgeLabel">咖啡树树龄 (年)</span></label>
+            <input type="number" id="tree-age" value="5" min="0" max="80" step="1">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg" id="btnAnalyze">
+          <span>🧠</span><span data-i18n="btnAnalyze">分析数据并生成决策</span>
+        </button>
+        <button type="button" class="btn btn-outline btn-lg" id="btnReset">
+          <span>🔄</span><span data-i18n="btnReset">恢复默认</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ========== 智能决策页面 ========== -->
+  <section class="page" id="page-decision">
+    <div class="page-header">
+      <h2 data-i18n="decisionTitle">🧠 智能决策建议</h2>
+      <p data-i18n="decisionSubtitle">基于土壤与气象数据的AI决策分析</p>
+    </div>
+    <div id="decisionContent">
+      <div class="card decision-empty">
+        <div class="empty-icon">📋</div>
+        <h3 data-i18n="decisionEmptyTitle">暂无决策建议</h3>
+        <p data-i18n="decisionEmptyDesc">请先在「数据录入」页面输入土壤和气象数据，点击"分析数据并生成决策"按钮</p>
+        <button class="btn btn-primary" onclick="document.querySelector('[data-page=input]').click()">
+          <span data-i18n="goToInput">→ 前往数据录入</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 智能问答页面 ========== -->
+  <section class="page" id="page-chat">
+    <div class="page-header">
+      <h2 data-i18n="chatTitle">💬 智能问答助手</h2>
+      <p data-i18n="chatSubtitle">关于肯尼亚咖啡种植的任何问题，我都可以为您解答</p>
+    </div>
+    <div class="card chat-card">
+      <div class="chat-container" id="chatContainer">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-bubble bot">
+            <div class="bubble-avatar">🤖</div>
+            <div class="bubble-content">
+              <p data-i18n="chatWelcome1">您好！我是肯尼亚咖啡种植助手 ☕</p>
+              <p data-i18n="chatWelcome2">您可以问我关于：</p>
+              <ul>
+                <li data-i18n="chatTopic1">🌱 土壤管理（pH调节、施肥方案）</li>
+                <li data-i18n="chatTopic2">✂️ 修剪技术（时间、方法、树形管理）</li>
+                <li data-i18n="chatTopic3">🐛 病虫害防治（常见病害识别与防治）</li>
+                <li data-i18n="chatTopic4">🌧️ 气象与灌溉（水分管理、气候适应）</li>
+                <li data-i18n="chatTopic5">🌿 品种选择（SL28、SL34、Ruiru 11等）</li>
+                <li data-i18n="chatTopic6">📜 发展历史与六大产区</li>
+                <li data-i18n="chatTopic7">🍒 收获处理与等级拍卖</li>
+                <li data-i18n="chatTopic8">🔥 烘焙冲煮与风味</li>
+              </ul>
+              <p data-i18n="chatWelcome3">请随时提问！</p>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="quick-questions">
+            <span class="quick-label" data-i18n="quickLabel">快捷提问：</span>
+            <button class="btn btn-sm btn-outline quick-btn" data-question="肯尼亚咖啡最佳施肥时间是什么时候？" data-i18n="quickFert">施肥时间</button>
+            <button class="btn btn-sm btn-outline quick-btn" data-question="咖啡树什么时候需要修剪？" data-i18n="quickPrune">修剪时间</button>
+            <button class="btn btn-sm btn-outline quick-btn" data-question="咖啡叶锈病怎么防治？" data-i18n="quickRust">叶锈病防治</button>
+            <button class="btn btn-sm btn-outline quick-btn" data-question="肯尼亚咖啡适宜的土壤pH是多少？" data-i18n="quickPh">土壤pH</button>
+            <button class="btn btn-sm btn-outline quick-btn" data-question="咖啡叶子发黄怎么办？" data-i18n="quickYellow">叶子发黄</button>
+            <button class="btn btn-sm btn-outline quick-btn" data-question="如何选购正宗的肯尼亚咖啡豆？" data-i18n="quickBuy">选购建议</button>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" id="chatInput" placeholder="输入您的问题..." autocomplete="off" data-i18n-placeholder="chatPlaceholder">
+            <button class="btn btn-primary" id="btnSend"><span data-i18n="btnSend">发送 ✈️</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Toast 通知 -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="js/decision.js?v=9"></script>
+<script src="js/chat.js?v=8"></script>
+<script src="js/main.js?v=9"></script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 - 肯尼亚咖啡豆智能种植管理系统</title>
+<link rel="stylesheet" href="css/auth.css?v=5">
+</head>
+<body>
+
+<!-- 语言切换按钮 -->
+<div class="lang-switcher" id="langSwitcher" role="group" aria-label="Language switch">
+  <svg class="lang-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+  </svg>
+  <button type="button" class="lang-btn active" data-lang="zh">中文</button>
+  <span class="lang-divider"></span>
+  <button type="button" class="lang-btn" data-lang="en">EN</button>
+  <span class="lang-divider"></span>
+  <button type="button" class="lang-btn" data-lang="sw">SW</button>
+</div>
+
+<!-- 背景粒子装饰 -->
+<div class="bg-particles" id="bgParticles"></div>
+
+<!-- ========== 全屏容器 ========== -->
+<div class="auth-container">
+
+  <!-- 左侧：图片轮播区 -->
+  <div class="auth-carousel" id="authCarousel">
+    <div class="carousel-overlay"></div>
+    <div class="carousel-gradient-top"></div>
+    <div class="carousel-gradient-bottom"></div>
+
+    <!-- 轮播图片 -->
+    <div class="carousel-track" id="carouselTrack">
+      <div class="carousel-slide">
+        <img src="image/18-210I0120TR23.jpg" alt="肯尼亚咖啡种植园">
+      </div>
+      <div class="carousel-slide">
+        <img src="image/33.jpg" alt="咖啡种植">
+      </div>
+      <div class="carousel-slide">
+        <img src="image/44.jpg" alt="咖啡果实">
+      </div>
+      <div class="carousel-slide">
+        <img src="image/55.jpg" alt="咖啡豆">
+      </div>
+      <div class="carousel-slide">
+        <img src="image/77.jpg" alt="肯尼亚农场">
+      </div>
+    </div>
+
+    <!-- 轮播指示器 -->
+    <div class="carousel-indicators" id="carouselIndicators">
+      <span class="dot active" data-idx="0"></span>
+      <span class="dot" data-idx="1"></span>
+      <span class="dot" data-idx="2"></span>
+      <span class="dot" data-idx="3"></span>
+      <span class="dot" data-idx="4"></span>
+    </div>
+
+    <!-- 轮播文字 -->
+    <div class="carousel-caption">
+      <div class="caption-badge" data-i18n="captionBadge">Kenya · AA Grade</div>
+      <h2 class="caption-title" data-i18n="captionTitle">肯尼亚咖啡豆</h2>
+      <h2 class="caption-subtitle" data-i18n="captionSubtitle">智能种植管理系统</h2>
+      <p class="caption-desc" data-i18n="captionDesc">基于土壤与气象数据的AI精准种植决策平台</p>
+      <div class="caption-stats">
+        <div class="stat-item">
+          <span class="stat-num" data-i18n="statNum1">5+</span>
+          <span class="stat-label" data-i18n="statModel">AI决策模型</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-i18n="statNum2">多维</span>
+          <span class="stat-label" data-i18n="statData">数据录入</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-i18n="statNum3">智能</span>
+          <span class="stat-label" data-i18n="statDecision">种植决策</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 左右箭头 -->
+    <button class="carousel-arrow prev" id="carouselPrev" aria-label="上一张" data-i18n-aria="ariaPrev">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="carousel-arrow next" id="carouselNext" aria-label="下一张" data-i18n-aria="ariaNext">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <!-- 右侧：登录/注册表单区 -->
+  <div class="auth-panel">
+    <div class="panel-inner">
+      <!-- Logo -->
+      <div class="auth-logo">
+        <div class="logo-icon-wrapper">
+          <span class="logo-icon">☕</span>
+          <span class="logo-pulse"></span>
+        </div>
+        <h1>KenyaCoffee</h1>
+        <p data-i18n="logoSub">智能种植 · 精准决策 · 丰收可期</p>
+      </div>
+
+      <!-- Tab切换 -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">
+          <span data-i18n="tabLogin">登 录</span>
+        </button>
+        <button class="auth-tab" data-tab="register">
+          <span data-i18n="tabRegister">注 册</span>
+        </button>
+        <div class="tab-indicator" id="tabIndicator"></div>
+      </div>
+
+      <!-- ====== 登录表单 ====== -->
+      <form class="auth-form active" id="loginForm" novalidate>
+        <div class="input-group">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <input type="text" id="loginUsername" placeholder="用户名或邮箱" data-i18n-placeholder="phLoginUsername" required autocomplete="username">
+        </div>
+        <span class="input-tip hidden" id="tipLoginUsername"></span>
+        <div class="input-group">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input type="password" id="loginPassword" placeholder="密码" data-i18n-placeholder="phLoginPassword" required autocomplete="current-password">
+          <span class="toggle-pw" data-target="loginPassword">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </span>
+        </div>
+        <span class="input-tip hidden" id="tipLoginPassword"></span>
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe">
+            <span class="checkmark"></span>
+            <span data-i18n="rememberMe">记住我</span>
+          </label>
+          <a href="#" class="forgot-link" id="forgotLink" data-i18n="forgot">忘记密码？</a>
+        </div>
+        <button type="submit" class="btn-auth" id="btnLogin">
+          <span class="btn-text" data-i18n="btnLogin">登 录</span>
+          <span class="btn-loader hidden"><span class="mini-spinner"></span></span>
+        </button>
+        <p class="form-error hidden" id="loginError"></p>
+      </form>
+
+      <!-- ====== 注册表单 ====== -->
+      <form class="auth-form" id="registerForm" novalidate>
+        <div class="input-group">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <input type="text" id="regUsername" placeholder="用户名" data-i18n-placeholder="phRegUsername" required autocomplete="username">
+        </div>
+        <span class="input-tip hidden" id="tipRegUsername"></span>
+        <div class="input-group">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </span>
+          <input type="email" id="regEmail" placeholder="邮箱地址" data-i18n-placeholder="phRegEmail" required autocomplete="email">
+        </div>
+        <span class="input-tip hidden" id="tipRegEmail"></span>
+        <div class="input-group">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input type="password" id="regPassword" placeholder="设置密码（至少8位，大小写+数字）" data-i18n-placeholder="phRegPassword" required autocomplete="new-password">
+          <span class="toggle-pw" data-target="regPassword">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </span>
+        </div>
+        <span class="input-tip hidden" id="tipRegPassword"></span>
+        <div class="input-group">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input type="password" id="regConfirm" placeholder="确认密码" data-i18n-placeholder="phRegConfirm" required autocomplete="new-password">
+          <span class="toggle-pw" data-target="regConfirm">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </span>
+        </div>
+        <span class="input-tip hidden" id="tipRegConfirm"></span>
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="agreeTerms" required>
+            <span class="checkmark"></span>
+            <span class="terms-text">
+              <span data-i18n="agreePrefix">我同意</span>
+              <a href="#" class="terms-link" data-i18n="terms">服务条款</a>
+              <span data-i18n="agreeAnd">和</span>
+              <a href="#" class="terms-link" data-i18n="privacy">隐私政策</a>
+            </span>
+          </label>
+        </div>
+        <button type="submit" class="btn-auth" id="btnRegister">
+          <span class="btn-text" data-i18n="btnRegister">注 册</span>
+          <span class="btn-loader hidden"><span class="mini-spinner"></span></span>
+        </button>
+        <p class="form-error hidden" id="registerError"></p>
+      </form>
+
+      <p class="auth-footer-text" data-i18n="footer">
+        KenyaCoffee © 2026 · 肯尼亚咖啡豆智能种植管理系统
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="auth-toast" id="authToast"></div>
+
+<!-- ========== 忘记密码模态框 ========== -->
+<div class="forgot-overlay hidden" id="forgotOverlay">
+  <div class="forgot-modal" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
+    <button class="forgot-close" id="forgotClose" type="button" aria-label="Close">✕</button>
+    <div class="forgot-head">
+      <div class="forgot-head-ico">🔑</div>
+      <h3 id="forgotTitle" data-i18n="forgotModalTitle">找回密码</h3>
+      <p data-i18n="forgotTip">输入注册邮箱，验证通过后即可重置密码</p>
+    </div>
+
+    <!-- 步骤指示器 -->
+    <div class="forgot-steps" id="forgotSteps">
+      <div class="fstep active" data-step="1">
+        <span class="fstep-num">1</span>
+        <span class="fstep-txt" data-i18n="forgotStep1">账号验证</span>
+      </div>
+      <span class="fstep-line"></span>
+      <div class="fstep" data-step="2">
+        <span class="fstep-num">2</span>
+        <span class="fstep-txt" data-i18n="forgotStep2">验证码</span>
+      </div>
+      <span class="fstep-line"></span>
+      <div class="fstep" data-step="3">
+        <span class="fstep-num">3</span>
+        <span class="fstep-txt" data-i18n="forgotStep3">重置密码</span>
+      </div>
+    </div>
+
+    <!-- 步骤1：账号验证 -->
+    <div class="forgot-panel active" id="forgotPanel1">
+      <div class="input-group">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </span>
+        <input type="email" id="forgotEmail" placeholder="注册邮箱" data-i18n-placeholder="forgotEmailPh" autocomplete="email">
+      </div>
+      <p class="form-error hidden" id="forgotEmailError"></p>
+      <button class="btn-auth" id="btnForgotCode" type="button">
+        <span class="btn-text" data-i18n="forgotGetCode">获取验证码</span>
+        <span class="btn-loader hidden"><span class="mini-spinner"></span></span>
+      </button>
+    </div>
+
+    <!-- 步骤2：验证码 -->
+    <div class="forgot-panel" id="forgotPanel2">
+      <p class="forgot-msg hidden" id="forgotSentInfo"></p>
+      <div class="input-group">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <input type="text" id="forgotCode" maxlength="6" placeholder="6位验证码" data-i18n-placeholder="forgotCodePh" inputmode="numeric" autocomplete="one-time-code">
+      </div>
+      <div class="forgot-timer-row">
+        <span class="forgot-timer hidden" id="forgotTimer"></span>
+        <button class="forgot-resend hidden" id="forgotResend" type="button" data-i18n="forgotResend">重新获取验证码</button>
+      </div>
+      <p class="form-error hidden" id="forgotCodeError"></p>
+      <button class="btn-auth" id="btnForgotVerify" type="button">
+        <span class="btn-text" data-i18n="forgotVerify">验 证</span>
+      </button>
+      <button class="btn-ghost" id="btnForgotBack1" type="button" data-i18n="forgotBack">← 返回上一步</button>
+    </div>
+
+    <!-- 步骤3：重置密码 -->
+    <div class="forgot-panel" id="forgotPanel3">
+      <div class="input-group">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <input type="password" id="forgotNewPw" placeholder="新密码" data-i18n-placeholder="forgotNewPwPh" autocomplete="new-password">
+      </div>
+      <div class="input-group">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <input type="password" id="forgotConfirmPw" placeholder="确认新密码" data-i18n-placeholder="forgotConfirmPh" autocomplete="new-password">
+      </div>
+      <p class="form-error hidden" id="forgotPwError"></p>
+      <button class="btn-auth" id="btnForgotSubmit" type="button">
+        <span class="btn-text" data-i18n="forgotSubmit">重置密码</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/auth.js?v=5"></script>
+</body>
+</html>

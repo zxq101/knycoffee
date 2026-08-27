@@ -1,0 +1,10 @@
+# Netlify 部署配置
+[build]
+  # 静态站点根目录（当前项目根）
+  publish = "."
+  # 云函数目录（AI 问答代理）
+  functions = "netlify/functions"
+
+# 本地开发（可选）：netlify dev 时静态目录
+[dev]
+  publish = "."
